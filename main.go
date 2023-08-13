@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -14,9 +15,26 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.SetTrustedProxies([]string{"192.168.10.0/24"})
+	router.SetTrustedProxies([]string{"192.168.1.0/24"})
 	router.GET("/temp", getTemp)
+	//router.StaticFile("/weather", "./yr-response.json")
+	router.GET("/weather", func(c *gin.Context) {
+		//data, err := os.ReadFile("./yr-response.json")
+		data, err := os.ReadFile("./yr_no.json")
+		if err != nil {
+			// error handler
+		}
+
+		c.Header("Content-Type", "application/json")
+
+		_, _ = c.Writer.Write(data)
+	})
 	router.Run("0.0.0.0:9090")
+}
+
+func getWeather(context *gin.Context) {
+
+	context.IndentedJSON(http.StatusOK, "")
 }
 
 func getTemp(context *gin.Context) {
